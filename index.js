@@ -3,15 +3,19 @@ const mercurius = require("mercurius");
 const fs = require("fs");
 const usersQuery = require("./src/resolvers/users/query");
 const usersMutations = require("./src/resolvers/users/mutations");
+const postsMutations = require("./src/resolvers/posts/mutations");
+const postsQuery = require("./src/resolvers/posts/query");
 const schema = fs.readFileSync("./src/graphql/schema.graphql", "utf8");
 const app = Fastify();
 
 const resolvers = {
-    Query: {
+  Query: {
     ...usersQuery,
+    ...postsQuery,
   },
   Mutation: {
-   ...usersMutations
+    ...usersMutations,
+    ...postsMutations,
   },
 };
 
