@@ -1,9 +1,26 @@
 type Query {
-  users: [User]
+  findUsers(input: MainQuery): [Users]
+  findOneUsers(input: MainQuery): Users
 }
 
-type User {
-  id: Int!
-  title: String!
-  body: String!
+type Mutation {
+  createUsers(input: UsersInput): String
+  updateUsers(input: UsersInput): String
+  deleteUsers(input: UsersInput): String
+}
+
+input MainQuery {
+  _id: String
+  limit: Int
+  page: Int
+}
+
+type Users {
+  _id: String
+  name: String
+}
+
+input UsersInput {
+  _id: String
+  name: String
 }
