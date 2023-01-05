@@ -1,23 +1,13 @@
 const Fastify = require("fastify");
 const mercurius = require("mercurius");
-const usersJSON = require("./users.json");
-
+const fs = require("fs");
+const userQuery = require("./src/resolvers/users/query");
+const schema = fs.readFileSync("./src/graphql/schema.graphql", "utf8");
 const app = Fastify();
-
-const schema = `
-  type Query {
-    users: [User]
-  }
-  type User {
-    id: Int!
-    title: String!
-    body: String!
-  }
-`;
 
 const resolvers = {
   Query: {
-    users: async () => usersJSON,
+    ...userQuery,
   },
 };
 
@@ -27,13 +17,8 @@ app.register(mercurius, {
   graphiql: true,
 });
 
-/* app.get("/", async function (req, reply) {
-  const query = "query {users {id title}}";
-  return reply.graphql(query);
-}); */
-
 const start = async () => {
-  const port = 3000
+  const port = 3000;
   try {
     await app.listen({ port });
     console.log(`http://localhost:${port}`);
@@ -43,3 +28,5 @@ const start = async () => {
   }
 };
 start();
+
+/* module.exports = app; */
