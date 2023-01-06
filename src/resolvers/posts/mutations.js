@@ -4,15 +4,13 @@ const mongodb = require("mongodb");
 const postsMutations = {
   createPosts: async (_, args) => {
     const { input } = args;
+    const { users } = input;
 
     const database = client.db("abc");
     const postsCollection = database.collection("posts");
 
-    /* Converting the string to ObjectId. */
-    const users = mongodb.ObjectId(input.users);
-    const str = { ...input, users };
-
-    const result = await postsCollection.insertOne(str);
+    const dto = { ...input, users: mongodb.ObjectId(users) };
+    const result = await postsCollection.insertOne(dto);
     if (result.insertedId) {
       return "Successfully inserted";
     }
@@ -20,16 +18,17 @@ const postsMutations = {
   },
   updatePosts: async (_, args) => {
     const { input } = args;
-    const { _id, title } = input;
+    const { _id, title, body, users } = input;
 
     const database = client.db("abc");
     const postsCollection = database.collection("posts");
 
-    const filter = { _id: mongodb.ObjectId(_id) };
-    const options = { upsert: true };
+    const filter = { _id: mongodb.ObjectId(_id), users: mongodb.ObjectId(users) };
+    const options = { upsert: false };
     const updateDoc = {
       $set: {
         title,
+        body,
       },
     };
     const result = await postsCollection.updateOne(filter, updateDoc, options);
@@ -40,13 +39,13 @@ const postsMutations = {
   },
   deletePosts: async (_, args) => {
     const { input } = args;
-    const { _id } = input;
+    const { _id, users } = input;
 
     const database = client.db("abc");
     const postsCollection = database.collection("posts");
 
-    const query = { _id: mongodb.ObjectId(_id) };
-    const result = await postsCollection.deleteOne(query);
+    const filter = { _id: mongodb.ObjectId(_id), users: mongodb.ObjectId(users) };
+    const result = await postsCollection.deleteOne(filter);
     if (result.deletedCount === 1) {
       return "Successfully deleted";
     }

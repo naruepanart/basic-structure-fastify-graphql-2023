@@ -12,7 +12,7 @@ const usersMutations = {
     if (result.insertedId) {
       return "Successfully inserted";
     }
-    return
+    return;
   },
   updateUsers: async (_, args) => {
     const { input } = args;
@@ -22,7 +22,7 @@ const usersMutations = {
     const usersCollection = database.collection("users");
 
     const filter = { _id: mongodb.ObjectId(_id) };
-    const options = { upsert: true };
+    const options = { upsert: false };
     const updateDoc = {
       $set: {
         name,
@@ -41,8 +41,8 @@ const usersMutations = {
     const database = client.db("abc");
     const usersCollection = database.collection("users");
 
-    const query = { _id: mongodb.ObjectId(_id) };
-    const result = await usersCollection.deleteOne(query);
+    const filter = { _id: mongodb.ObjectId(_id) };
+    const result = await usersCollection.deleteOne(filter);
     if (result.deletedCount === 1) {
       return "Successfully deleted";
     }
