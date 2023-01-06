@@ -1,10 +1,6 @@
-const { MongoClient, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const { z } = require("zod");
-
-const MONGODB_CONNECT =
-  "mongodb+srv://JtCqGymTW0vlPTIQ:urajvwgRuh89HUOq@cluster0.vnqxc.mongodb.net/abc?retryWrites=true&w=majority";
-
-const client = new MongoClient(MONGODB_CONNECT);
+const client = require("../../../database/mongodb");
 
 const find = async (input) => {
   const schema = z.object({
@@ -21,14 +17,14 @@ const find = async (input) => {
 };
 const findOne = async (input) => {
   const schema = z.object({
-    id: z.string(),
+    _id: z.string(),
   });
   const dto = schema.parse(input);
 
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const result = await usersCollection.findOne({ _id: new ObjectId(dto.id) });
+  const result = await usersCollection.findOne({ _id: new ObjectId(dto._id) });
   if (!result) {
     return { status_code: 1, message: "users not found" };
   }
@@ -51,7 +47,7 @@ const create = async (input) => {
 };
 const update = async (input) => {
   const schema = z.object({
-    id: z.string(),
+    _id: z.string(),
     name: z.string(),
   });
   const dto = schema.parse(input);
@@ -59,7 +55,7 @@ const update = async (input) => {
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const filter = { _id: new ObjectId(dto.id) };
+  const filter = { _id: new ObjectId(dto._id) };
   const options = { upsert: false };
   const updateDoc = {
     $set: {
@@ -74,14 +70,14 @@ const update = async (input) => {
 };
 const remove = async (input) => {
   const schema = z.object({
-    id: z.string(),
+    _id: z.string(),
   });
   const dto = schema.parse(input);
 
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const filter = { _id: new ObjectId(dto.id) };
+  const filter = { _id: new ObjectId(dto._id) };
   const result = await usersCollection.deleteOne(filter);
   if (result.deletedCount === 0) {
     return { status_code: 1, message: "remove failure" };
@@ -109,14 +105,14 @@ const remove = (body) => {
 
 /* async function run() {
   const Tfind = await find({ limit: 5, skip: 0 });
-  const TfindOne = await findOne({ id: "63b869bb79b9e3e006bd28d5" });
+  const TfindOne = await findOne({ _id: "63b869bb79b9e3e006bd28d5" });
   const Tcreate = await create({ name: Math.random().toString() });
   const Tupdate = await update({
-    id: "63b869bb79b9e3e006bd28d5",
+    _id: "63b869bb79b9e3e006bd28d5",
     name: "Alessia Rosario 101",
   });
   const Tremove = await remove({
-    id: "63b869b16d0d2d17b1c74565",
+    _id: "63b869b16d0d2d17b1c74565",
   });
   console.log(Tremove);
 }

@@ -1,11 +1,7 @@
-const { MongoClient, ObjectId } = require("mongodb");
-const users_services = require("./users_services");
+const { ObjectId } = require("mongodb");
+const users_services = require("../users/users_services");
 const { z } = require("zod");
-
-const MONGODB_CONNECT =
-  "mongodb+srv://JtCqGymTW0vlPTIQ:urajvwgRuh89HUOq@cluster0.vnqxc.mongodb.net/abc?retryWrites=true&w=majority";
-
-const client = new MongoClient(MONGODB_CONNECT);
+const client = require("../../../database/mongodb");
 
 const find = async (input) => {
   const schema = z.object({
@@ -17,23 +13,46 @@ const find = async (input) => {
   const database = client.db("abc");
   const postsCollection = database.collection("posts");
 
-  const result = await postsCollection.find({}).sort({ _id: -1 }).limit(dto.limit).skip(dto.skip).toArray();
+  const result = await postsCollection
+    .aggregate()
+    .sort({ _id: -1 })
+    .skip(dto.skip)
+    .limit(dto.limit)
+    .lookup({
+      from: "users",
+      localField: "users",
+      foreignField: "_id",
+      as: "users",
+    })
+    .unwind("$users")
+    .toArray();
   return result;
 };
 const findOne = async (input) => {
   const schema = z.object({
-    id: z.string(),
+    _id: z.string(),
   });
   const dto = schema.parse(input);
 
   const database = client.db("abc");
   const postsCollection = database.collection("posts");
 
-  const result = await postsCollection.findOne({ _id: new ObjectId(dto.id) });
-  if (!result) {
+  const result = await postsCollection
+    .aggregate()
+    .match({ _id: new ObjectId(dto._id) })
+    .lookup({
+      from: "users",
+      localField: "users",
+      foreignField: "_id",
+      as: "users",
+    })
+    .unwind("$users")
+    .toArray();
+  if (!result[0]) {
     return { status_code: 1, message: "posts not found" };
   }
-  return result;
+  console.log(result);
+  return result[0];
 };
 const create = async (input) => {
   const schema = z.object({
@@ -46,7 +65,7 @@ const create = async (input) => {
   const database = client.db("abc");
   const postsCollection = database.collection("posts");
 
-  const usersServices = await users_services.findOne({ id: dto.users });
+  const usersServices = await users_services.findOne({ _id: dto.users });
   if (usersServices.status_code === 1) {
     return { status_code: usersServices.status_code, message: usersServices.message };
   }
@@ -60,7 +79,7 @@ const create = async (input) => {
 };
 const update = async (input) => {
   const schema = z.object({
-    id: z.string(),
+    _id: z.string(),
     users: z.string(),
     title: z.string().trim(),
     body: z.string().trim(),
@@ -70,12 +89,12 @@ const update = async (input) => {
   const database = client.db("abc");
   const postsCollection = database.collection("posts");
 
-  const usersServices = await users_services.findOne({ id: dto.users });
+  const usersServices = await users_services.findOne({ _id: dto.users });
   if (usersServices.status_code === 1) {
     return { status_code: usersServices.status_code, message: usersServices.message };
   }
 
-  const filter = { _id: new ObjectId(dto.id), users: usersServices._id };
+  const filter = { _id: new ObjectId(dto._id), users: usersServices._id };
   const options = { upsert: false };
   const updateDoc = {
     $set: {
@@ -91,7 +110,7 @@ const update = async (input) => {
 };
 const remove = async (input) => {
   const schema = z.object({
-    id: z.string(),
+    _id: z.string(),
     users: z.string(),
   });
   const dto = schema.parse(input);
@@ -99,12 +118,12 @@ const remove = async (input) => {
   const database = client.db("abc");
   const postsCollection = database.collection("posts");
 
-  const usersServices = await users_services.findOne({ id: dto.users });
+  const usersServices = await users_services.findOne({ _id: dto.users });
   if (usersServices.status_code === 1) {
     return { status_code: usersServices.status_code, message: usersServices.message };
   }
 
-  const filter = { _id: new ObjectId(dto.id), users: usersServices._id };
+  const filter = { _id: new ObjectId(dto._id), users: usersServices._id };
   const result = await postsCollection.deleteOne(filter);
   if (result.deletedCount === 0) {
     return { status_code: 1, message: "remove failure" };
@@ -132,20 +151,20 @@ const remove = (body) => {
 
 /* async function run() {
   const Tfind = await find({ limit: 5, skip: 0 });
-  const TfindOne = await findOne({ id: "63b858b7f236d9e00400d5d2" });
+  const TfindOne = await findOne({ _id: "63b858b7f236d9e00400d5d2" });
   const Tcreate = await create({
     users: "63b8414e0276c377c1c7df1c",
     title: Math.random().toString(),
     body: Math.random().toString(),
   });
   const Tupdate = await update({
-    id: "63b85ed68ced1f94e29c9259",
+    _id: "63b85ed68ced1f94e29c9259",
     title: "updated 10",
     body: "updated 20",
     users: "63b8414e0276c377c1c7df1c",
   });
   const Tremove = await remove({
-    id: "63b85ee7dd1aa8206e9f73ff",
+    _id: "63b85ee7dd1aa8206e9f73ff",
     users: "63b8414e0276c377c1c7df1c",
   });
   console.log(Tremove);

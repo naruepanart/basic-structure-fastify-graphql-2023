@@ -1,55 +1,35 @@
-const client = require("../../../database/mongodb");
-const mongodb = require("mongodb");
+const posts_services = require("./posts_services");
 
 const postsMutations = {
   createPosts: async (_, args) => {
     const { input } = args;
-    const { users } = input;
+    const { users, title, body } = input;
 
-    const database = client.db("abc");
-    const postsCollection = database.collection("posts");
-
-    const dto = { ...input, users: mongodb.ObjectId(users) };
-    const result = await postsCollection.insertOne(dto);
-    if (result.insertedId) {
-      return "Successfully inserted";
+    const result = await posts_services.create({ users, title, body });
+    if (result.status_code === 1) {
+      return result.message;
     }
-    return;
+    return "Successfully inserted";
   },
   updatePosts: async (_, args) => {
     const { input } = args;
     const { _id, title, body, users } = input;
 
-    const database = client.db("abc");
-    const postsCollection = database.collection("posts");
-
-    const filter = { _id: mongodb.ObjectId(_id), users: mongodb.ObjectId(users) };
-    const options = { upsert: false };
-    const updateDoc = {
-      $set: {
-        title,
-        body,
-      },
-    };
-    const result = await postsCollection.updateOne(filter, updateDoc, options);
-    if (result.matchedCount === 1) {
-      return "Successfully updated";
+    const result = await posts_services.update({ _id, users, title, body });
+    if (result.status_code === 1) {
+      return result.message;
     }
-    return;
+    return "Successfully updated";
   },
   removePosts: async (_, args) => {
     const { input } = args;
     const { _id, users } = input;
 
-    const database = client.db("abc");
-    const postsCollection = database.collection("posts");
-
-    const filter = { _id: mongodb.ObjectId(_id), users: mongodb.ObjectId(users) };
-    const result = await postsCollection.deleteOne(filter);
-    if (result.deletedCount === 1) {
-      return "Successfully deleted";
+    const result = await posts_services.remove({ _id, users });
+    if (result.status_code === 1) {
+      return result.message;
     }
-    return;
+    return "Successfully deleted";
   },
 };
 

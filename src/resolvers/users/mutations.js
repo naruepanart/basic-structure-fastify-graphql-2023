@@ -1,52 +1,35 @@
-const client = require("../../../database/mongodb");
-const mongodb = require("mongodb");
+const users_services = require("./users_services");
 
 const usersMutations = {
   createUsers: async (_, args) => {
     const { input } = args;
+    const { name } = input;
 
-    const database = client.db("abc");
-    const usersCollection = database.collection("users");
-
-    const result = await usersCollection.insertOne(input);
-    if (result.insertedId) {
-      return "Successfully inserted";
+    const result = await users_services.create({ name });
+    if (result.status_code === 1) {
+      return result.message;
     }
-    return;
+    return "Successfully inserted";
   },
   updateUsers: async (_, args) => {
     const { input } = args;
     const { _id, name } = input;
 
-    const database = client.db("abc");
-    const usersCollection = database.collection("users");
-
-    const filter = { _id: mongodb.ObjectId(_id) };
-    const options = { upsert: false };
-    const updateDoc = {
-      $set: {
-        name,
-      },
-    };
-    const result = await usersCollection.updateOne(filter, updateDoc, options);
-    if (result.matchedCount === 1) {
-      return "Successfully updated";
+    const result = await users_services.update({ _id, name });
+    if (result.status_code === 1) {
+      return result.message;
     }
-    return;
+    return "Successfully updated";
   },
   removeUsers: async (_, args) => {
     const { input } = args;
     const { _id } = input;
 
-    const database = client.db("abc");
-    const usersCollection = database.collection("users");
-
-    const filter = { _id: mongodb.ObjectId(_id) };
-    const result = await usersCollection.deleteOne(filter);
-    if (result.deletedCount === 1) {
-      return "Successfully deleted";
+    const result = await users_services.remove({ _id });
+    if (result.status_code === 1) {
+      return result.message;
     }
-    return;
+    return "Successfully deleted";
   },
 };
 
