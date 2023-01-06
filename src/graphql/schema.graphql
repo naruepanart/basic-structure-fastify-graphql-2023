@@ -1,5 +1,5 @@
 type Query {
-  findPosts(input: MainQuery): [Posts] 
+  findPosts(input: MainQuery): [Posts]
   findOnePosts(input: MainQuery): Posts
 
   findUsers(input: MainQuery): [Users]
@@ -21,6 +21,7 @@ type Posts {
   title: String
   users: Users
   body: String
+  country: Country
 }
 
 input PostsInput {
@@ -28,6 +29,12 @@ input PostsInput {
   users: String
   title: String
   body: String
+  country: String
+}
+
+type Country {
+  _id: String
+  title: String
 }
 
 type Users {

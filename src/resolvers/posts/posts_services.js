@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const users_services = require("../users/users_services");
+const country_services = require("../country/country_services");
 const { z } = require("zod");
 const client = require("../../../database/mongodb");
 
@@ -25,6 +26,13 @@ const find = async (input) => {
       as: "users",
     })
     .unwind("$users")
+    .lookup({
+      from: "country",
+      localField: "country",
+      foreignField: "_id",
+      as: "country",
+    })
+    .unwind("$country")
     .toArray();
   return result;
 };
@@ -58,6 +66,7 @@ const create = async (input) => {
     users: z.string(),
     title: z.string().trim(),
     body: z.string().trim(),
+    country: z.string().trim(),
   });
   const dto = schema.parse(input);
 
@@ -68,8 +77,12 @@ const create = async (input) => {
   if (usersServices.status_code === 1) {
     return { status_code: usersServices.status_code, message: usersServices.message };
   }
+  const countryServices = await country_services.findOne({ title: dto.country });
+  if (countryServices.status_code === 1) {
+    return { status_code: countryServices.status_code, message: countryServices.message };
+  }
 
-  const str = { ...dto, users: usersServices._id };
+  const str = { ...dto, users: usersServices._id, country: countryServices._id };
   const result = await postsCollection.insertOne(str);
   if (!result.insertedId) {
     return { status_code: 1, message: "create failure" };
@@ -131,13 +144,6 @@ const remove = async (input) => {
 };
 
 module.exports = { find, findOne, create, update, remove };
-
-/* const first = async () => {
-  const TfindOne = await findOne({ _id: "63b882d3c2de7ad8eadc2968" });
-  console.log(TfindOne);
-};
-
-first(); */
 
 /* const find = (body) => {
   return posts_services.find(body);

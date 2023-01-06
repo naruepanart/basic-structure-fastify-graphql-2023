@@ -87,9 +87,9 @@ const remove = async (input) => {
 
 module.exports = { find, findOne, create, update, remove };
 
-const first = async () => {
+/* const first = async () => {
   const Tcreate = await remove({ _id: "63b88e9865bc3cabeafcb1d3" });
   console.log(Tcreate);
 };
 
-first();
+first(); */
