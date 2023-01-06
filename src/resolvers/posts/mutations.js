@@ -3,9 +3,7 @@ const posts_services = require("./posts_services");
 const postsMutations = {
   createPosts: async (_, args) => {
     const { input } = args;
-    const { users, title, body, country } = input;
-
-    const result = await posts_services.create({ users, title, body, country });
+    const result = await posts_services.create(input);
     if (result.status_code === 1) {
       return result.message;
     }
@@ -13,9 +11,7 @@ const postsMutations = {
   },
   updatePosts: async (_, args) => {
     const { input } = args;
-    const { _id, title, body, users } = input;
-
-    const result = await posts_services.update({ _id, users, title, body });
+    const result = await posts_services.update(input);
     if (result.status_code === 1) {
       return result.message;
     }
@@ -23,9 +19,7 @@ const postsMutations = {
   },
   removePosts: async (_, args) => {
     const { input } = args;
-    const { _id, users } = input;
-
-    const result = await posts_services.remove({ _id, users });
+    const result = await posts_services.remove(input);
     if (result.status_code === 1) {
       return result.message;
     }
