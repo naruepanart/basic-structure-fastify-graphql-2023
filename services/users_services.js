@@ -108,20 +108,16 @@ const remove = (body) => {
 }; */
 
 /* async function run() {
-  try {
-    const Tfind = await find({ limit: 5, skip: 0 });
-    const TfindOne = await findOne({ id: "63b70c7b5a644d109bba1d92" });
-    const Tcreate = await create({ name: Math.random() });
-    const Tupdate = await update({
-      id: "63b8414e0276c377c1c7df1c",
-      name: "Alessia Rosario",
-    });
-    const Tremove = await remove({
-      id: "63b84149a60f0c71577aa95b",
-    });
-    console.log(Tremove);
-  } finally {
-    await client.close();
-  }
+  const Tfind = await find({ limit: 5, skip: 0 });
+  const TfindOne = await findOne({ id: "63b869bb79b9e3e006bd28d5" });
+  const Tcreate = await create({ name: Math.random().toString() });
+  const Tupdate = await update({
+    id: "63b869bb79b9e3e006bd28d5",
+    name: "Alessia Rosario 101",
+  });
+  const Tremove = await remove({
+    id: "63b869b16d0d2d17b1c74565",
+  });
+  console.log(Tremove);
 }
 run(); */
