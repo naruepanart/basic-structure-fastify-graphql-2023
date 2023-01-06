@@ -77,7 +77,7 @@ const create = async (input) => {
   if (usersServices.status_code === 1) {
     return { status_code: usersServices.status_code, message: usersServices.message };
   }
-  const countryServices = await country_services.findOneAndCreate({ title: dto.country });
+  const countryServices = await country_services.findOneAndCreate({ name: dto.country });
   if (countryServices.status_code === 1) {
     return { status_code: countryServices.status_code, message: countryServices.message };
   }
