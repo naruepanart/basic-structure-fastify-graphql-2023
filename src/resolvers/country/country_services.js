@@ -30,6 +30,23 @@ const findOne = async (input) => {
   }
   return result;
 };
+const findOneAndCreate = async (input) => {
+  const schema = z.object({
+    title: z.string(),
+  });
+  const dto = schema.parse(input);
+
+  const database = client.db("abc");
+  const countryCollection = database.collection("country");
+
+  /* Checking if the country exists in the database. If it does not exist, it will create it. */
+  const result = await countryCollection.findOne(dto);
+  if (!result) {
+    const res = await create(dto);
+    return { _id: res.insertedId };
+  }
+  return result;
+};
 const create = async (input) => {
   const schema = z.object({
     title: z.string().trim(),
@@ -85,7 +102,7 @@ const remove = async (input) => {
   return result;
 };
 
-module.exports = { find, findOne, create, update, remove };
+module.exports = { find, findOne, findOneAndCreate, create, update, remove };
 
 /* const first = async () => {
   const Tcreate = await remove({ _id: "63b88e9865bc3cabeafcb1d3" });
