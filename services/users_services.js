@@ -1,4 +1,5 @@
 const { MongoClient, ObjectId } = require("mongodb");
+const { z } = require("zod");
 
 const MONGODB_CONNECT =
   "mongodb+srv://JtCqGymTW0vlPTIQ:urajvwgRuh89HUOq@cluster0.vnqxc.mongodb.net/abc?retryWrites=true&w=majority";
@@ -6,30 +7,42 @@ const MONGODB_CONNECT =
 const client = new MongoClient(MONGODB_CONNECT);
 
 const find = async (input) => {
-  const { limit = 10, skip = 0 } = input;
+  const schema = z.object({
+    limit: z.number().max(10).default(10),
+    skip: z.number().default(0),
+  });
+  const dto = schema.parse(input);
 
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const result = await usersCollection.find({}).sort({ _id: -1 }).limit(limit).skip(skip).toArray();
+  const result = await usersCollection.find({}).sort({ _id: -1 }).limit(dto.limit).skip(dto.skip).toArray();
   return result;
 };
 const findOne = async (input) => {
-  const { id } = input;
+  const schema = z.object({
+    id: z.string(),
+  });
+  const dto = schema.parse(input);
+
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const result = await usersCollection.findOne({ _id: new ObjectId(id) });
+  const result = await usersCollection.findOne({ _id: new ObjectId(dto.id) });
   if (!result) {
     return { status_code: 1, message: "users not found" };
   }
   return result;
 };
 const create = async (input) => {
+  const schema = z.object({
+    name: z.string().trim(),
+  });
+  const dto = schema.parse(input);
+
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const dto = { ...input };
   const result = await usersCollection.insertOne(dto);
   if (!result.insertedId) {
     return { status_code: 1, message: "create failure" };
@@ -37,16 +50,20 @@ const create = async (input) => {
   return result;
 };
 const update = async (input) => {
-  const { id, name } = input;
+  const schema = z.object({
+    id: z.string(),
+    name: z.string(),
+  });
+  const dto = schema.parse(input);
 
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const filter = { _id: new ObjectId(id) };
+  const filter = { _id: new ObjectId(dto.id) };
   const options = { upsert: false };
   const updateDoc = {
     $set: {
-      name,
+      name: dto.name,
     },
   };
   const result = await usersCollection.updateOne(filter, updateDoc, options);
@@ -56,12 +73,15 @@ const update = async (input) => {
   return result;
 };
 const remove = async (input) => {
-  const { id } = input;
+  const schema = z.object({
+    id: z.string(),
+  });
+  const dto = schema.parse(input);
 
   const database = client.db("abc");
   const usersCollection = database.collection("users");
 
-  const filter = { _id: new ObjectId(id) };
+  const filter = { _id: new ObjectId(dto.id) };
   const result = await usersCollection.deleteOne(filter);
   if (result.deletedCount === 0) {
     return { status_code: 1, message: "remove failure" };
