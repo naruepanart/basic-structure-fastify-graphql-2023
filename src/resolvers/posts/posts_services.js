@@ -51,7 +51,6 @@ const findOne = async (input) => {
   if (!result[0]) {
     return { status_code: 1, message: "posts not found" };
   }
-  console.log(result);
   return result[0];
 };
 const create = async (input) => {
@@ -133,6 +132,13 @@ const remove = async (input) => {
 
 module.exports = { find, findOne, create, update, remove };
 
+/* const first = async () => {
+  const TfindOne = await findOne({ _id: "63b882d3c2de7ad8eadc2968" });
+  console.log(TfindOne);
+};
+
+first(); */
+
 /* const find = (body) => {
   return posts_services.find(body);
 };
@@ -151,7 +157,7 @@ const remove = (body) => {
 
 /* async function run() {
   const Tfind = await find({ limit: 5, skip: 0 });
-  const TfindOne = await findOne({ _id: "63b858b7f236d9e00400d5d2" });
+  const TfindOne = await findOne({ _id: "63b882d3c2de7ad8eadc2968" });
   const Tcreate = await create({
     users: "63b8414e0276c377c1c7df1c",
     title: Math.random().toString(),
