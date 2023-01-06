@@ -34,7 +34,7 @@ input PostsInput {
 
 type Country {
   _id: String
-  title: String
+  name: String
 }
 
 type Users {
