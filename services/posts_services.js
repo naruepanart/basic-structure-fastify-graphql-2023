@@ -131,23 +131,23 @@ const remove = (body) => {
 }; */
 
 /* async function run() {
-  try {
-    const Tfind = await find({ limit: 5, skip: 0 });
-    const TfindOne = await findOne({ id: "63b83523a13221c9026be01b" });
-    const Tcreate = await create({ users: "63b84149a60f0c71577aa95b", title: Math.random(), body: Math.random() });
-    const Tupdate = await update({
-      id: "63b83523a13221c9026be01b",
-      title: "updated 10",
-      body: "updated 20",
-      users: "63b84149a60f0c71577aa95b",
-    });
-    const Tremove = await remove({
-      id: "63b8397e555dc782c8850094",
-      users: "63b84149a60f0c71577aa95b",
-    });
-    console.log(Tremove);
-  } finally {
-    await client.close();
-  }
+  const Tfind = await find({ limit: 5, skip: 0 });
+  const TfindOne = await findOne({ id: "63b858b7f236d9e00400d5d2" });
+  const Tcreate = await create({
+    users: "63b8414e0276c377c1c7df1c",
+    title: Math.random().toString(),
+    body: Math.random().toString(),
+  });
+  const Tupdate = await update({
+    id: "63b85ed68ced1f94e29c9259",
+    title: "updated 10",
+    body: "updated 20",
+    users: "63b8414e0276c377c1c7df1c",
+  });
+  const Tremove = await remove({
+    id: "63b85ee7dd1aa8206e9f73ff",
+    users: "63b8414e0276c377c1c7df1c",
+  });
+  console.log(Tremove);
 }
 run(); */
