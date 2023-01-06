@@ -37,7 +37,7 @@ const postsMutations = {
     }
     return;
   },
-  deletePosts: async (_, args) => {
+  removePosts: async (_, args) => {
     const { input } = args;
     const { _id, users } = input;
 

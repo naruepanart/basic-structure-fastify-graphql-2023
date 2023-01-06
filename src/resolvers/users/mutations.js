@@ -34,7 +34,7 @@ const usersMutations = {
     }
     return;
   },
-  deleteUsers: async (_, args) => {
+  removeUsers: async (_, args) => {
     const { input } = args;
     const { _id } = input;
 

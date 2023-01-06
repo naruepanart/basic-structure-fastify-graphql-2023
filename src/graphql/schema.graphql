@@ -9,11 +9,11 @@ type Query {
 type Mutation {
   createPosts(input: PostsInput): String
   updatePosts(input: PostsInput): String
-  deletePosts(input: PostsInput): String
+  removePosts(input: PostsInput): String
 
   createUsers(input: UsersInput): String
   updateUsers(input: UsersInput): String
-  deleteUsers(input: UsersInput): String
+  removeUsers(input: UsersInput): String
 }
 
 type Posts {
