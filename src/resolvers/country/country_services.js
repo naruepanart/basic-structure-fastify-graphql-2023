@@ -17,7 +17,7 @@ const find = async (input) => {
 };
 const findOne = async (input) => {
   const schema = z.object({
-    title: z.string(),
+    name: z.string(),
   });
   const dto = schema.parse(input);
 
@@ -32,7 +32,7 @@ const findOne = async (input) => {
 };
 const findOneAndCreate = async (input) => {
   const schema = z.object({
-    title: z.string(),
+    name: z.string(),
   });
   const dto = schema.parse(input);
 
@@ -49,7 +49,7 @@ const findOneAndCreate = async (input) => {
 };
 const create = async (input) => {
   const schema = z.object({
-    title: z.string().trim(),
+    name: z.string().trim(),
   });
   const dto = schema.parse(input);
 
@@ -65,7 +65,7 @@ const create = async (input) => {
 const update = async (input) => {
   const schema = z.object({
     _id: z.string(),
-    title: z.string().trim(),
+    name: z.string().trim(),
   });
   const dto = schema.parse(input);
 
@@ -76,7 +76,7 @@ const update = async (input) => {
   const options = { upsert: false };
   const updateDoc = {
     $set: {
-      title: dto.title,
+      name: dto.name,
     },
   };
   const result = await countryCollection.updateOne(filter, updateDoc, options);
